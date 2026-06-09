@@ -16,7 +16,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FuncionarioController controller = new FuncionarioController(stage);
+        MainController controller = new MainController(stage);
         controller.mostrar();
     }
 
