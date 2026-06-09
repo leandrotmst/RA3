@@ -33,10 +33,14 @@ public class FuncionarioController {
         l.setText("Label ");
         l.setFont(new Font("Arial",20));
         pane.add(l,0,0);
-        // Botão
+        // Botão Salvar Funcionário
         Button btnSaveFuncionario = new Button();
-        btnSaveFuncionario.setText("Gravar Funcionario");
+        btnSaveFuncionario.setText("Gravar Funcionário");
         btnSaveFuncionario.setOnAction((event) -> handleBtnFuncionarioSaveOnClick(event));
+        // Botão Editar Funcionário
+        Button btnEditFuncionario = new Button();
+        btnEditFuncionario.setText("Editar Fucionário");
+        btnEditFuncionario.setOnAction((event) -> handleBtnFuncionarioEditOnClick(event));
         // Adiciona ao Pane na coluna 1, linha 0
         pane.add(btnSaveFuncionario,1,0);
         Scene cena = new Scene(pane, 1400,800);
@@ -51,5 +55,8 @@ public class FuncionarioController {
      */
     public void handleBtnFuncionarioSaveOnClick(ActionEvent e){
         System.out.println("handleBtnFuncionarioSave click");
+    }
+    public void handleBtnFuncionarioEditOnClick(ActionEvent e){
+        System.out.println("handleBtnFuncionarioEdit click");
     }
 }
