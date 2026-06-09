@@ -30,15 +30,20 @@ public class MainController {
      * Cria os componentes da cena.
      */
     private void criarComponentes(){
-        Button btnAbrir = new Button("Funcionário");
-        btnAbrir.setOnAction(event -> {
+        Button btnAbrirFuncionario = new Button("Funcionário");
+        btnAbrirFuncionario.setOnAction(event -> {
             FuncionarioController funcionarioController = new FuncionarioController(this.stagePrincipal);
             funcionarioController.mostrar();
+        });
+        Button btnAbrirGestor = new Button("Gestor");
+        btnAbrirGestor.setOnAction(event -> {
+            GestorController gestorController = new GestorController(this.stagePrincipal);
+            gestorController.mostrar();
         });
 
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll( btnAbrir);
+        layout.getChildren().addAll( btnAbrirFuncionario, btnAbrirGestor);
         // cria a cena e atribui ao atributo
         this.cena = new Scene(layout, 300, 200);
     }
