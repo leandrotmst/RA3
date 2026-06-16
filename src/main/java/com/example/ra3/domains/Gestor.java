@@ -1,8 +1,6 @@
 package com.example.ra3.domains;
 
-import java.io.Serializable;
-
-public class Gestor implements Serializable {
+public class Gestor {
     String nome;
     String email;
     String telefone;
