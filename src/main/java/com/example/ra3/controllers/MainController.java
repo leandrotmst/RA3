@@ -1,6 +1,7 @@
 package com.example.ra3.controllers;
 
 import com.example.ra3.controllers.analista.LoginAnalistaController;
+import com.example.ra3.controllers.gestor.LoginGestorController;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,6 +36,15 @@ public class MainController {
             login.mostrar();
         });
 
+
+        // Botão para o módulo Gestor
+        Button btnGestor = new Button("Área do Gestor - Leandro");
+        btnGestor.setPrefWidth(250);
+        btnGestor.setOnAction(e -> {
+            LoginGestorController login = new LoginGestorController(stage);
+            login.mostrar();
+        });
+
         Button btnSair = new Button("Sair");
         btnSair.setPrefWidth(250);
         btnSair.setOnAction(e -> stage.close());
@@ -42,10 +52,11 @@ public class MainController {
         layout.getChildren().addAll(
                 titulo,
                 btnAnalista,
+                btnGestor,
                 btnSair
         );
 
-        Scene scene = new Scene(layout, 1300, 700);
+        Scene scene = new Scene(layout, 800, 600);
         stage.setScene(scene);
         stage.setTitle("Menu Principal - AlignUp");
         stage.show();
