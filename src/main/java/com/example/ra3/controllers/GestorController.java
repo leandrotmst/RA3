@@ -1,14 +1,18 @@
 package com.example.ra3.controllers;
 
 import com.example.ra3.domains.Gestor;
-import com.example.ra3.persistence.ArquivoGestor;
-import com.example.ra3.exceptions.FuncionarioException;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -17,81 +21,153 @@ import javafx.stage.Stage;
 
 public class GestorController {
     private Stage stage;
-    private TextField txtNome, txtEmail, txtTelefone;
+    private TextField txtNome;
+    private TextField txtEmail;
+    private TextField txtTelefone;
     private TableView<Gestor> tabela;
-    private static final ObservableList<Gestor> listaGestors = FXCollections.observableArrayList();
 
-    static {
-        try {
-            listaGestors.addAll(ArquivoGestor.lerLista());
-        } catch (FuncionarioException e) {
-            System.err.println("Erro ao carregar: " + e.getMessage());
-        }
-    }
+    static final ObservableList<Gestor> listaGestors = FXCollections.observableArrayList();
 
     private Gestor gestorEmEdicao = null;
 
-    public GestorController(Stage stage){ this.stage = stage; }
+    public GestorController(Stage stage){
+        this.stage = stage;
+    }
 
-    public void mostrar() {
+    public void mostrar(){
         VBox root = new VBox(15);
         root.setPadding(new Insets(15));
+
         GridPane grid = new GridPane();
-        grid.setVgap(10); grid.setHgap(10);
-        txtNome = new TextField(); txtEmail = new TextField(); txtTelefone = new TextField();
-        grid.add(new Label("Nome:"), 0, 0); grid.add(txtNome, 1, 0);
-        grid.add(new Label("E-mail:"), 0, 1); grid.add(txtEmail, 1, 1);
-        grid.add(new Label("Telefone:"), 0, 2); grid.add(txtTelefone, 1, 2);
+        grid.setVgap(10);
+        grid.setHgap(10);
+
+        Label lblNome = new Label("Nome:");
+        txtNome = new TextField();
+        txtNome.setPrefWidth(400);
+
+        Label lblEmail = new Label("E-mail:");
+        txtEmail = new TextField();
+        txtEmail.setPrefWidth(400);
+
+        Label lblTelefone = new Label("Telefone:");
+        txtTelefone = new TextField();
+        txtTelefone.setPrefWidth(400);
+
+        grid.add(lblNome, 0, 0);
+        grid.add(txtNome, 1, 0);
+        grid.add(lblEmail, 0, 1);
+        grid.add(txtEmail, 1, 1);
+        grid.add(lblTelefone, 0, 2);
+        grid.add(txtTelefone, 1, 2);
+
         HBox buttonsBox = new HBox(10);
-        Button btnSalvar = new Button("Salvar"); btnSalvar.setOnAction(e -> handleSalvar());
-        Button btnExcluir = new Button("Excluir"); btnExcluir.setOnAction(e -> handleExcluir());
-        Button btnEditar = new Button("Editar"); btnEditar.setOnAction(e -> handleEditar());
-        Button btnVoltar = new Button("Voltar"); btnVoltar.setOnAction(e -> new MainController(stage).mostrar());
+        Button btnSalvar = new Button("Salvar");
+        btnSalvar.setOnAction(event -> handleBtnGestorSaveOnClick());
+
+        Button btnExcluir = new Button("Excluir");
+        btnExcluir.setOnAction(event -> handleBtnGestorDeleteOnClick());
+
+        Button btnEditar = new Button("Editar");
+        btnEditar.setOnAction(event -> handleBtnGestorEditOnClick());
+
+        Button btnVoltar = new Button("Voltar");
+        btnVoltar.setOnAction(event -> handleBtnVoltarOnClick());
+
         buttonsBox.getChildren().addAll(btnSalvar, btnExcluir, btnEditar, btnVoltar);
+
         tabela = new TableView<>();
         tabela.setItems(listaGestors);
+
         TableColumn<Gestor, String> colNome = new TableColumn<>("Nome");
-        colNome.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNome()));
-        tabela.getColumns().add(colNome);
+        colNome.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNome()));
+
+        TableColumn<Gestor, String> colEmail = new TableColumn<>("E-mail");
+        colEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
+
+        TableColumn<Gestor, String> colTelefone = new TableColumn<>("Telefone");
+        colTelefone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTelefone()));
+
+        tabela.getColumns().addAll(colNome, colEmail, colTelefone);
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(tabela, Priority.ALWAYS);
+
         root.getChildren().addAll(grid, buttonsBox, tabela);
-        stage.setScene(new Scene(root, 1400, 800));
+
+        Scene cena = new Scene(root, 1400, 800);
+        stage.setScene(cena);
         stage.show();
     }
 
-    private void handleSalvar() {
-        try {
-            String n = txtNome.getText().trim(), m = txtEmail.getText().trim(), t = txtTelefone.getText().trim();
-            if (n.isEmpty() || m.isEmpty() || t.isEmpty()) throw new Exception("Campos vazios");
-            if (gestorEmEdicao != null) {
-                gestorEmEdicao.setNome(n); gestorEmEdicao.setEmail(m); gestorEmEdicao.setTelefone(t);
-                tabela.refresh(); gestorEmEdicao = null;
-            } else {
-                listaGestors.add(new Gestor(n, m, t));
-            }
-            ArquivoGestor.salvarLista(listaGestors);
-            txtNome.clear(); txtEmail.clear(); txtTelefone.clear();
-        } catch (Exception e) { mostrarErro(e.getMessage()); }
+    private void handleBtnGestorSaveOnClick() {
+        String nome = txtNome.getText().trim();
+        String email = txtEmail.getText().trim();
+        String telefone = txtTelefone.getText().trim();
+
+        if (nome.isEmpty() || email.isEmpty() || telefone.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Campos Vazios");
+            alert.setHeaderText(null);
+            alert.setContentText("Por favor, preencha todos os campos.");
+            alert.showAndWait();
+            return;
+        }
+
+        if (gestorEmEdicao != null) {
+            gestorEmEdicao.setNome(nome);
+            gestorEmEdicao.setEmail(email);
+            gestorEmEdicao.setTelefone(telefone);
+            tabela.refresh();
+            gestorEmEdicao = null;
+        } else {
+            listaGestors.add(new Gestor(nome, email, telefone));
+        }
+
+        txtNome.clear();
+        txtEmail.clear();
+        txtTelefone.clear();
     }
 
-    private void handleEditar() {
-        Gestor s = tabela.getSelectionModel().getSelectedItem();
-        if (s == null) return;
-        txtNome.setText(s.getNome()); txtEmail.setText(s.getEmail()); txtTelefone.setText(s.getTelefone());
-        gestorEmEdicao = s;
+    private void handleBtnGestorEditOnClick() {
+        Gestor selecionado = tabela.getSelectionModel().getSelectedItem();
+        if (selecionado == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Nenhum Selecionado");
+            alert.setHeaderText(null);
+            alert.setContentText("Por favor, selecione um gestor na lista para editar.");
+            alert.showAndWait();
+            return;
+        }
+
+        txtNome.setText(selecionado.getNome());
+        txtEmail.setText(selecionado.getEmail());
+        txtTelefone.setText(selecionado.getTelefone());
+        gestorEmEdicao = selecionado;
     }
 
-    private void handleExcluir() {
-        try {
-            Gestor s = tabela.getSelectionModel().getSelectedItem();
-            if (s == null) return;
-            listaGestors.remove(s);
-            ArquivoGestor.salvarLista(listaGestors);
-        } catch (Exception e) { mostrarErro(e.getMessage()); }
+    private void handleBtnGestorDeleteOnClick() {
+        Gestor selecionado = tabela.getSelectionModel().getSelectedItem();
+        if (selecionado == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Nenhum Selecionado");
+            alert.setHeaderText(null);
+            alert.setContentText("Por favor, selecione um gestor na lista para excluir.");
+            alert.showAndWait();
+            return;
+        }
+
+        listaGestors.remove(selecionado);
+
+        if (selecionado == gestorEmEdicao) {
+            gestorEmEdicao = null;
+            txtNome.clear();
+            txtEmail.clear();
+            txtTelefone.clear();
+        }
     }
 
-    private void mostrarErro(String m) {
-        Alert a = new Alert(Alert.AlertType.ERROR); a.setContentText(m); a.showAndWait();
+    private void handleBtnVoltarOnClick() {
+        MainController mainController = new MainController(stage);
+        mainController.mostrar();
     }
 }
