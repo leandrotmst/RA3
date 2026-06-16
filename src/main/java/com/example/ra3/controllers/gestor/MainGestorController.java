@@ -47,13 +47,36 @@ public class MainGestorController {
             gestorCtrl.mostrar();
         });
 
+        Button btnReunioes = new Button("Gerenciar Reuniões");
+
+        btnReunioes.setOnAction(e -> {
+            ReuniaoController reuniaoCtrl =
+                    new ReuniaoController(stage, gestor);
+            reuniaoCtrl.mostrar();
+        });
+
+        Button btnPermissoes = new Button("Gerenciar Permissões");
+
+        btnPermissoes.setOnAction(e -> {
+            PermissaoController permissaoCtrl =
+                    new PermissaoController(stage, gestor);
+            permissaoCtrl.mostrar();
+        });
+
         Button btnLogout = new Button("Logout");
         btnLogout.setOnAction(e -> {
             LoginGestorController login = new LoginGestorController(stage);
             login.mostrar();
         });
 
-        layout.getChildren().addAll(boasVindas, btnGerenciarFuncionarios, btnMeusDados, btnLogout);
+        layout.getChildren().addAll(
+                boasVindas,
+                btnGerenciarFuncionarios,
+                btnMeusDados,
+                btnReunioes,
+                btnPermissoes,
+                btnLogout
+        );
         this.cena = new Scene(layout, 800, 600);
     }
 }
