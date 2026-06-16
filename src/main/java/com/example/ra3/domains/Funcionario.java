@@ -1,8 +1,6 @@
 package com.example.ra3.domains;
 
-import java.io.Serializable;
-
-public class Funcionario implements Serializable {
+public class Funcionario {
     String nome;
     String email;
     String equipe;
