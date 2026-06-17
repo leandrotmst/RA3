@@ -9,12 +9,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class MainIgorController {
+public class MainReu_PerController {
 
     private Stage stage;
     private Scene cena;
 
-    public MainIgorController(Stage stage) {
+    public MainReu_PerController (Stage stage) {
         this.stage = stage;
         criarUI();
     }

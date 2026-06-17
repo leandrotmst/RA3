@@ -1,6 +1,6 @@
 package com.example.ra3.controllers;
 
-import com.example.ra3.controllers.Reu_Per.MainIgorController;
+import com.example.ra3.controllers.Reu_Per.MainReu_PerController ;
 import com.example.ra3.controllers.analista.LoginAnalistaController;
 import com.example.ra3.controllers.administrador.LoginAdministradorController;
 import com.example.ra3.controllers.formularios.MainFormulariosController;
@@ -70,7 +70,7 @@ public class MainController {
         Button btnReu_Per = new Button("Reuniões e Permissões - Igor");
         btnReu_Per.setPrefWidth(250);
         btnReu_Per.setOnAction(e -> {
-            MainIgorController controller = new MainIgorController(stage);
+            MainReu_PerController  controller = new MainReu_PerController (stage);
             controller.mostrar();
         });
 

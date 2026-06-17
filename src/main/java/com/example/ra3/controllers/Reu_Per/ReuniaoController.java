@@ -52,7 +52,7 @@ public class ReuniaoController {
         btnLimpar.setOnAction(e -> limparCampos());
 
         Button btnVoltar = new Button("Voltar");
-        btnVoltar.setOnAction(e -> new MainIgorController(stage).mostrar());
+        btnVoltar.setOnAction(e -> new MainReu_PerController (stage).mostrar());
 
         HBox botoes = new HBox(10, btnCadastrar, btnAtualizar, btnExcluir, btnLimpar, btnVoltar);
         botoes.setAlignment(Pos.CENTER);
