@@ -2,6 +2,7 @@ package com.example.ra3.controllers;
 
 import com.example.ra3.controllers.analista.LoginAnalistaController;
 import com.example.ra3.controllers.gestor.LoginGestorController;
+import com.example.ra3.controllers.cargo.MainGerenciamentoController;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -45,6 +46,11 @@ public class MainController {
             login.mostrar();
         });
 
+        // Botão para a área de Gerenciamento (Cargos / Setores)
+        Button btnGerenciamento = new Button("Área de Gerenciamento");
+        btnGerenciamento.setPrefWidth(250);
+        btnGerenciamento.setOnAction(e -> new MainGerenciamentoController(stage).mostrar());
+
         Button btnSair = new Button("Sair");
         btnSair.setPrefWidth(250);
         btnSair.setOnAction(e -> stage.close());
@@ -53,6 +59,7 @@ public class MainController {
                 titulo,
                 btnAnalista,
                 btnGestor,
+                btnGerenciamento,
                 btnSair
         );
 
