@@ -1,6 +1,7 @@
 package com.example.ra3.controllers;
 
 import com.example.ra3.controllers.analista.LoginAnalistaController;
+import com.example.ra3.controllers.formularios.MainFormulariosController;
 import com.example.ra3.controllers.gestor.LoginGestorController;
 import com.example.ra3.controllers.cargo.MainGerenciamentoController;
 import javafx.geometry.Pos;
@@ -47,9 +48,15 @@ public class MainController {
         });
 
         // Botão para a área de Gerenciamento (Cargos / Setores)
-        Button btnGerenciamento = new Button("Área de Gerenciamento");
+        Button btnGerenciamento = new Button("Área de Gerenciamento - Rafael");
         btnGerenciamento.setPrefWidth(250);
         btnGerenciamento.setOnAction(e -> new MainGerenciamentoController(stage).mostrar());
+
+        // Botão para o módulo Formularios
+        Button btnFormularios = new Button("Área de Formulários - Fernanda");
+        btnFormularios.setPrefWidth(250);
+        btnFormularios.setOnAction(e -> new MainFormulariosController(stage).mostrar());
+
 
         Button btnSair = new Button("Sair");
         btnSair.setPrefWidth(250);
@@ -60,6 +67,7 @@ public class MainController {
                 btnAnalista,
                 btnGestor,
                 btnGerenciamento,
+                btnFormularios,
                 btnSair
         );
 
