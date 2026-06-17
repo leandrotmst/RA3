@@ -13,12 +13,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class ReviewController {
     private Stage stage;
     private TextField txtSolucao;
     private TextField txtResultado;
+    private TextField txtData;
     private TableView<Review> tabela;
+
+    private static final DateTimeFormatter FORMATO_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     static final ObservableList<Review> listaReviews = FXCollections.observableArrayList();
 
@@ -44,10 +50,20 @@ public class ReviewController {
         txtResultado = new TextField();
         txtResultado.setPrefWidth(400);
 
+        Label lblData = new Label("Data do registro (DD/MM/AAAA):");
+        txtData = new TextField();
+        txtData.setPrefWidth(400);
+        txtData.setPromptText("Ex: 17/06/2026");
+        txtData.textProperty().addListener((obs, antigo, novo) -> {
+            if (novo.length() > 10) txtData.setText(antigo);
+        });
+
         grid.add(lblSolucao, 0, 0);
         grid.add(txtSolucao, 1, 0);
         grid.add(lblResultado, 0, 1);
         grid.add(txtResultado, 1, 1);
+        grid.add(lblData, 0, 2);
+        grid.add(txtData, 1, 2);
 
         HBox buttonsBox = new HBox(10);
         Button btnSalvar = new Button("Salvar");
@@ -73,7 +89,11 @@ public class ReviewController {
         TableColumn<Review, String> colResultado = new TableColumn<>("Resultado obtido");
         colResultado.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getResultado()));
 
-        tabela.getColumns().addAll(colSolucao, colResultado);
+        TableColumn<Review, String> colData = new TableColumn<>("Data");
+        colData.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDataRegistro().format(FORMATO_BR)));
+
+        tabela.getColumns().addAll(colSolucao, colResultado, colData);
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(tabela, Priority.ALWAYS);
 
@@ -87,6 +107,7 @@ public class ReviewController {
     private void handleBtnReviewSaveOnClick() {
         String solucao = txtSolucao.getText().trim();
         String resultado = txtResultado.getText().trim();
+        String dataTexto = txtData.getText().trim();
 
         if (solucao.isEmpty() || resultado.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -97,17 +118,31 @@ public class ReviewController {
             return;
         }
 
+        LocalDate data;
+        try {
+            data = LocalDate.parse(dataTexto, FORMATO_BR);
+        } catch (DateTimeParseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Data Inválida");
+            alert.setHeaderText(null);
+            alert.setContentText("Data inválida! Use o formato DD/MM/AAAA. Ex: 17/06/2026");
+            alert.showAndWait();
+            return;
+        }
+
         if (reviewEmEdicao != null) {
             reviewEmEdicao.setSolucao(solucao);
             reviewEmEdicao.setResultado(resultado);
+            reviewEmEdicao.setDataRegistro(data);
             tabela.refresh();
             reviewEmEdicao = null;
         } else {
-            listaReviews.add(new Review(solucao, resultado));
+            listaReviews.add(new Review(solucao, resultado, data));
         }
 
         txtSolucao.clear();
         txtResultado.clear();
+        txtData.clear();
     }
 
     private void handleBtnReviewEditOnClick() {
@@ -123,6 +158,7 @@ public class ReviewController {
 
         txtSolucao.setText(selecionado.getSolucao());
         txtResultado.setText(selecionado.getResultado());
+        txtData.setText(selecionado.getDataRegistro().format(FORMATO_BR));
         reviewEmEdicao = selecionado;
     }
 
@@ -143,6 +179,7 @@ public class ReviewController {
             reviewEmEdicao = null;
             txtSolucao.clear();
             txtResultado.clear();
+            txtData.clear();
         }
     }
 

@@ -13,12 +13,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class RespostaController {
     private Stage stage;
     private TextField txtNivelEstresse;
     private TextField txtResumo;
+    private TextField txtData;
     private TableView<Resposta> tabela;
+
+    private static final DateTimeFormatter FORMATO_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     static final ObservableList<Resposta> listaRespostas = FXCollections.observableArrayList();
 
@@ -42,11 +48,20 @@ public class RespostaController {
         txtResumo = new TextField();
         txtResumo.setPrefWidth(400);
 
+        Label lblData = new Label("Data do registro (DD/MM/AAAA):");
+        txtData = new TextField();
+        txtData.setPrefWidth(400);
+        txtData.setPromptText("Ex: 17/06/2026");
+        txtData.textProperty().addListener((obs, antigo, novo) -> {
+            if (novo.length() > 10) txtData.setText(antigo);
+        });
 
         grid.add(lblNivelEstresse, 0, 0);
         grid.add(txtNivelEstresse, 1, 0);
         grid.add(lblResumo, 0, 1);
         grid.add(txtResumo, 1, 1);
+        grid.add(lblData, 0, 2);
+        grid.add(txtData, 1, 2);
 
         HBox buttonsBox = new HBox(10);
         Button btnSalvar = new Button("Salvar");
@@ -72,7 +87,11 @@ public class RespostaController {
         TableColumn<Resposta, String> colResumo = new TableColumn<>("Resumo da semana");
         colResumo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getResumo()));
 
-        tabela.getColumns().addAll(colNivelEstresse, colResumo);
+        TableColumn<Resposta, String> colData = new TableColumn<>("Data");
+        colData.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDataRegistro().format(FORMATO_BR)));
+
+        tabela.getColumns().addAll(colNivelEstresse, colResumo, colData);
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         VBox.setVgrow(tabela, Priority.ALWAYS);
 
@@ -86,8 +105,9 @@ public class RespostaController {
     private void handleBtnRespostaSaveOnClick() {
         String nivelEstresse = txtNivelEstresse.getText().trim();
         String resumo = txtResumo.getText().trim();
+        String dataTexto = txtData.getText().trim();
 
-        if (nivelEstresse.isEmpty() || resumo.isEmpty()) {
+        if (nivelEstresse.isEmpty() || resumo.isEmpty() || dataTexto.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Campos Vazios");
             alert.setHeaderText(null);
@@ -96,17 +116,31 @@ public class RespostaController {
             return;
         }
 
+        LocalDate data;
+        try {
+            data = LocalDate.parse(dataTexto, FORMATO_BR);
+        } catch (DateTimeParseException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Data Inválida");
+            alert.setHeaderText(null);
+            alert.setContentText("Data inválida! Use o formato DD/MM/AAAA. Ex: 17/06/2026");
+            alert.showAndWait();
+            return;
+        }
+
         if (respostaEmEdicao != null) {
             respostaEmEdicao.setNivelEstresse(nivelEstresse);
             respostaEmEdicao.setResumo(resumo);
+            respostaEmEdicao.setDataRegistro(data);
             tabela.refresh();
             respostaEmEdicao = null;
         } else {
-            listaRespostas.add(new Resposta(nivelEstresse, resumo));
+            listaRespostas.add(new Resposta(nivelEstresse, resumo, data));
         }
 
         txtNivelEstresse.clear();
         txtResumo.clear();
+        txtData.clear();
     }
 
     private void handleBtnRespostaEditOnClick() {
@@ -122,6 +156,7 @@ public class RespostaController {
 
         txtNivelEstresse.setText(selecionado.getNivelEstresse());
         txtResumo.setText(selecionado.getResumo());
+        txtData.setText(selecionado.getDataRegistro().format(FORMATO_BR));
         respostaEmEdicao = selecionado;
     }
 
@@ -142,6 +177,7 @@ public class RespostaController {
             respostaEmEdicao = null;
             txtNivelEstresse.clear();
             txtResumo.clear();
+            txtData.clear();
         }
     }
 
