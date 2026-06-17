@@ -1,6 +1,7 @@
 package com.example.ra3.controllers;
 
 import com.example.ra3.controllers.analista.LoginAnalistaController;
+import com.example.ra3.controllers.administrador.LoginAdministradorController;
 import com.example.ra3.controllers.formularios.MainFormulariosController;
 import com.example.ra3.controllers.gestor.LoginGestorController;
 import com.example.ra3.controllers.cargo.MainGerenciamentoController;
@@ -32,6 +33,13 @@ public class MainController {
 
         // Botão para o módulo Analista
         Button btnAnalista = new Button("Área do Analista - Yumi");
+        Button btnAdministrador = new Button("\u00C1rea do Administrador");
+        btnAdministrador.setPrefWidth(250);
+        btnAdministrador.setOnAction(e -> {
+            LoginAdministradorController login = new LoginAdministradorController(stage);
+            login.mostrar();
+        });
+
         btnAnalista.setPrefWidth(250);
         btnAnalista.setOnAction(e -> {
             LoginAnalistaController login = new LoginAnalistaController(stage);
@@ -64,6 +72,7 @@ public class MainController {
 
         layout.getChildren().addAll(
                 titulo,
+                btnAdministrador,
                 btnAnalista,
                 btnGestor,
                 btnGerenciamento,
