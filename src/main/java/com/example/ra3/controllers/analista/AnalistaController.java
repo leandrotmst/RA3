@@ -183,7 +183,7 @@ public class AnalistaController {
         btnNao.setOnAction(e -> modal.close());
 
         layout.getChildren().addAll(msg, btnSim, btnNao);
-        Scene scene = new Scene(layout, 1300, 700);
+        Scene scene = new Scene(layout, 500, 300);
         modal.setScene(scene);
         modal.showAndWait();    // aguarda o usuário decidir
     }

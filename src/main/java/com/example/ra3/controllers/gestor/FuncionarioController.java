@@ -23,6 +23,7 @@ public class FuncionarioController {
     private TextField txtNome, txtEmail, txtEquipe;
     private TableView<Funcionario> tabela;
     private ObservableList<Funcionario> listaFiltrada;
+    private Funcionario funcionarioEmEdicao;
 
     public FuncionarioController(Stage stage, Gestor gestor) {
         this.stage = stage;
@@ -51,9 +52,10 @@ public class FuncionarioController {
 
         HBox buttonsBox = new HBox(10);
         Button btnSalvar = new Button("Salvar"); btnSalvar.setOnAction(e -> handleSalvar());
+        Button btnEditar = new Button("Editar"); btnEditar.setOnAction(e -> handleEditar());
         Button btnExcluir = new Button("Excluir"); btnExcluir.setOnAction(e -> handleExcluir());
         Button btnVoltar = new Button("Voltar"); btnVoltar.setOnAction(e -> new MainGestorController(stage, gestorLogado).mostrar());
-        buttonsBox.getChildren().addAll(btnSalvar, btnExcluir, btnVoltar);
+        buttonsBox.getChildren().addAll(btnSalvar, btnEditar, btnExcluir, btnVoltar);
 
         tabela = new TableView<>();
         tabela.setItems(listaFiltrada);
@@ -78,11 +80,31 @@ public class FuncionarioController {
             String n = txtNome.getText().trim(), m = txtEmail.getText().trim(), q = txtEquipe.getText().trim();
             if (n.isEmpty() || m.isEmpty() || q.isEmpty()) throw new Exception("Preencha todos os campos.");
 
-            listaFiltrada.add(new Funcionario(n, m, q, gestorLogado.getEmail()));
+            if (funcionarioEmEdicao == null) {
+                listaFiltrada.add(new Funcionario(n, m, q, gestorLogado.getEmail()));
+            } else {
+                funcionarioEmEdicao.setNome(n);
+                funcionarioEmEdicao.setEmail(m);
+                funcionarioEmEdicao.setEquipe(q);
+                tabela.refresh();
+                funcionarioEmEdicao = null;
+            }
+
             ArquivoFuncionario.atualizarListaGeral(new ArrayList<>(listaFiltrada), gestorLogado.getEmail());
 
             txtNome.clear(); txtEmail.clear(); txtEquipe.clear();
         } catch (Exception e) { mostrarErro(e.getMessage()); }
+    }
+
+    private void handleEditar() {
+        funcionarioEmEdicao = tabela.getSelectionModel().getSelectedItem();
+        if (funcionarioEmEdicao != null) {
+            txtNome.setText(funcionarioEmEdicao.getNome());
+            txtEmail.setText(funcionarioEmEdicao.getEmail());
+            txtEquipe.setText(funcionarioEmEdicao.getEquipe());
+        } else {
+            mostrarErro("Selecione um funcionário na tabela para editar.");
+        }
     }
 
     private void handleExcluir() {

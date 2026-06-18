@@ -40,7 +40,10 @@ public class LoginGestorController {
         Button btnCadastrar = new Button("Cadastrar");
         btnCadastrar.setOnAction(e -> mostrarCadastro());
 
-        hbBotoes.getChildren().addAll(btnEntrar, btnCadastrar);
+        Button btnVoltarMenu = new Button("Voltar ao Menu Principal");
+        btnVoltarMenu.setOnAction(e -> new com.example.ra3.controllers.MainController(stage).mostrar());
+
+        hbBotoes.getChildren().addAll(btnEntrar, btnCadastrar, btnVoltarMenu);
 
         layout.getChildren().addAll(lblTitulo, txtEmail, txtSenha, hbBotoes);
         stage.setScene(new Scene(layout, 400, 300));
